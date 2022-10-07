@@ -1,7 +1,11 @@
-import { ContactItem } from './ContactItem/ContactItem';
-import { ItemStyle } from './ContactCard.styled';
 import { useSelector } from 'react-redux';
-import { getContacts,  getFilters} from 'redux/selectors';
+
+import { ContactItem } from './ContactItem/ContactItem';
+import { useFetchContactsQuery } from 'redux/contactSlice';
+import { selectFilter} from 'redux/selectors';
+
+
+import { ItemStyle } from './ContactCard.styled';
 
 const getVizibleContacts = (contacts, filter) => {
   const normalizedFilter = filter.toLowerCase();
@@ -11,12 +15,13 @@ const getVizibleContacts = (contacts, filter) => {
 };
 
 export const ContactCard = () => {
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilters);
+  const {data: contacts} = useFetchContactsQuery();
+  const filter = useSelector(selectFilter);
   const vizibleContacts = getVizibleContacts(contacts, filter);
+
   return (
     <ul>
-      {vizibleContacts.map(contact => (
+      {vizibleContacts.reverse().map(contact => (
         <ItemStyle key={contact.id}>
           <ContactItem contact={contact} />
         </ItemStyle>

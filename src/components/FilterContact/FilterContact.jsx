@@ -1,6 +1,7 @@
-import { Box } from 'components/theme/Box';
 import { useDispatch } from 'react-redux';
 import { filterContacts } from 'redux/filtrSlice';
+
+import { Box } from 'components/theme/Box';
 
 export const FilterContact = () => {
   const dispatch = useDispatch();

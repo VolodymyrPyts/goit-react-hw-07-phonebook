@@ -1,16 +1,15 @@
-import { getContacts } from 'redux/selectors';
-import { useSelector } from 'react-redux';
-
 import { Box } from 'components/theme/Box';
 import { FormAddContact } from './FormAddContact/FormAddContact';
 import { ContactCard } from './ContactCard/ContactCard';
 import { FilterContact } from './FilterContact/FilterContact';
+import { Loader } from "./Loader/Loader";
 
 import { TitleStyle } from './FormAddContact/FormAddContact.styled';
+import { useFetchContactsQuery } from 'redux/contactSlice';
 
 export const App = () => {
 
-  const contacts = useSelector(getContacts)
+  const { data: contacts, isFetching } = useFetchContactsQuery();
 
     return (
       <>
@@ -26,10 +25,11 @@ export const App = () => {
             <Box as="h2" mb="12px">
               Contacts
             </Box>
-            {contacts.length > 0 ? (<FilterContact />) :
+            {isFetching && <Loader />}
+            {contacts?.length > 0 ? (<FilterContact />) :
             (<Box> Let`s get started. Please add a new contact</Box>)
             }
-            {contacts.length > 0 && <ContactCard />}
+            {contacts?.length > 0 && <ContactCard />}
           </Box>
         </Box>
       </>

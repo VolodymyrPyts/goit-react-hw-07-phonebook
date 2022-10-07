@@ -1,24 +1,36 @@
+import PropTypes from 'prop-types';
 
 import { Box } from 'components/theme/Box';
-import { useDispatch } from 'react-redux';
-import { deleteContact } from 'redux/contactSlice';
+
+import { Loader } from 'components/Loader/Loader';
+import { useDeleteContactMutation } from 'redux/contactSlice';
 
 import { ItemSpanStyle, DelButtonStyle } from './ContactItem.styled';
 
-export const ContactItem = ({contact: { id, name, number}}) => {
-  const dispatch = useDispatch();
-  const handleDelete = id => dispatch(deleteContact(id))
-  
+export const ContactItem = ({ contact: { id, name, phone } }) => {
+  const [deleteContact, { isLoading: isDeleting }] = useDeleteContactMutation();
+
   return (
     <>
       <Box display="flex">
         <ItemSpanStyle>{name}:</ItemSpanStyle>
-        <ItemSpanStyle>{number}</ItemSpanStyle>
+        <ItemSpanStyle>{phone}</ItemSpanStyle>
       </Box>
-      <DelButtonStyle type="button" onClick={() => handleDelete(id)}>
+      <DelButtonStyle
+        type="button"
+        onClick={() => deleteContact(id)}
+        disabled={isDeleting}
+      >
+        {isDeleting && <Loader size={14} />}
         Delete
       </DelButtonStyle>
     </>
   );
 };
 
+ContactItem.propTypes = {
+  contact:  PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  phone: PropTypes.string.isRequired,
+})};

@@ -1,51 +1,47 @@
-
 import { useState } from 'react';
-import shortid from 'shortid';
 
-import { LabelStyle, ButtonStyle } from './FormAddContact.styled';
+import {
+  useFetchContactsQuery,
+  useCreateContactMutation,
+} from 'redux/contactSlice';
+import { Loader } from 'components/Loader/Loader';
+
 import { Box } from 'components/theme/Box';
-import { useDispatch, useSelector } from 'react-redux';
-import {getContacts} from 'redux/selectors'
-import {addContact} from 'redux/contactSlice'
+import { LabelStyle, ButtonStyle } from './FormAddContact.styled';
 
 export const FormAddContact = () => {
   const [formInput, setFormInput] = useState({
-    name: "",
-    number: "",
+    name: '',
+    number: '',
   });
-  
-  const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
-
+  const { data: contacts } = useFetchContactsQuery();
+  const [createContact, { isLoading }] = useCreateContactMutation();
   const { name, number } = formInput;
 
   const onInputChange = e => {
     const { name, value } = e.currentTarget;
     setFormInput(state => ({ ...state, [name]: value }));
   };
-  
-  const onHandleSubmit = e => {
+
+  const onHandleSubmit = async e => {
     e.preventDefault();
 
     setFormInput({
-      name: "",
-      number: "",
+      name: '',
+      number: '',
     });
 
     const newContact = {
       name,
       number,
-      id: shortid(),
-  };
+    };
 
-  contacts.find(
-    contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
-  )
-    ? alert(`${newContact.name} is already exist in your contacts!`)
-    : dispatch(addContact(newContact));
-  }
-
-  
+    contacts.find(
+      contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+    )
+      ? alert(`${newContact.name} is already exist in your contacts!`)
+      : await createContact(newContact);
+  }; 
 
   return (
     <Box width="400px">
@@ -78,9 +74,11 @@ export const FormAddContact = () => {
             onChange={onInputChange}
           />
         </LabelStyle>
-        <ButtonStyle type="submit">Add new Contact</ButtonStyle>
+        <ButtonStyle type="submit">
+          {isLoading && <Loader size={14} />}
+          Add new Contact
+        </ButtonStyle>
       </form>
     </Box>
   );
 };
-
